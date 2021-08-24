@@ -168,7 +168,8 @@ preprocess_modalities <- function(mri.patient, folder.patient, modalities, atlas
   # Inhomogeneity Correction: N4
   message(paste0('*********************************************\n****** Inhomogeneity Correction: ', inhomogeneity ,' *********\n*********************************************\n--Running...\n'))
   bias_files <- lapply(modalities, function(x) file.path(folder.patient, paste0( x, '_bias.nii.gz')))
-  bias_mri <- mapply(extrantsr::bias_correct, file = mri.patient, correction = inhomogeneity, outfile = bias_files, verbose = FALSE, SIMPLIFY = FALSE)
+  bias_mri <- mapply(extrantsr::bias_correct, file = mri.patient, correction = inhomogeneity,
+                     outfile = bias_files, verbose = FALSE, SIMPLIFY = FALSE)
   mri_paths[['bias']]<- unlist(bias_files)
   message('--Complete.\n')
 
@@ -177,17 +178,24 @@ preprocess_modalities <- function(mri.patient, folder.patient, modalities, atlas
     message(paste0('*********************************************\n****** Coregistration to T1 sequence ********\n*********************************************\n--Running...\n'))
     coregisteredImg <- extrantsr::within_visit_registration(fixed = mri.patient$T1, moving = bias_files[2:length(mri.patient)], typeofTransform = "Rigid", interpolator = "Linear", verbose = FALSE)
     bias_mri_comp <- coregistration_images(coregisteredImg)
+    fwd_warps <- cbind(coregisteredImg$fwdtransforms,
+                       unlist(lapply(modalities[-1], function(x) file.path(folder.patient, paste0( x, '_toT1_warp.mat')))))
+    apply(fwd_warps, 1, function(x) file.rename(from=x[1], to=x[2]))
     message('--Complete.\n')
   }
 
   # Registration to Template (SyN: Non-linear)
   message(paste0('*********************************************\n******* Spatial Registration : ',transformation , ' **********\n*********************************************\n--Running...\n'))
   syn_files <- lapply(modalities, function(x) file.path(folder.patient, paste0( x, '_SyN_MNI152.nii.gz')))
+  fwd_warp_mni <- file.path(folder.patient, 'T1_toMNI_warp')
+  syn_mri <- extrantsr::registration(filename = bias_files[[1]], outfile = syn_files[[1]],
+                                      template.file = atlas, typeofTransform = transformation,
+                                      remove.warp = FALSE, outprefix = fwd_warp_mni, verbose = FALSE)
   if (length(modalities) > 1){
     bias_mris <- create_bias_list(modalities, bias_mri$T1, bias_mri_comp)
-    syn_mri <- mapply(extrantsr::ants_regwrite, filename = bias_mris, outfile = syn_files, template.file = atlas, typeofTransform = transformation,  verbose = FALSE)
-  }else{
-    syn_mri <- extrantsr::ants_regwrite(filename = bias_files[[1]], outfile = syn_files[[1]], template.file = atlas, typeofTransform = transformation, verbose = FALSE)
+    app_warp <- lapply(list(bias_mris[[-1]]), function(x) extrantsr::ants_apply_transforms(fixed = atlas,
+                      moving = x, transformlist = syn_mri$fwdtransforms, verbose = FALSE))
+    lapply(1:length(app_warp), function(x) neurobase::writenii(app_warp[[x]], syn_files[[x+1]]))
   }
   mri_paths[['registered']] <- unlist(syn_files)
   message('--Complete.\n')

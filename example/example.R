@@ -2,7 +2,7 @@
 ## ----------------------- Installation  --------------------------
 
 # install.packages("devtools")
-devtools::install_github("DavidPayares/neuronorm@main")
+devtools::install_github("jdwor/neuronorm@main")
 
 ## ----------------------- Data Loading  --------------------------
 

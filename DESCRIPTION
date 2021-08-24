@@ -38,7 +38,6 @@ Suggests:
     neurodata
 Depends:
     R (>= 3.5)
-Additional_repositories: https://davidpayares.github.io/drat
 Description: Preprocessing pipeline for normalizing and cleaning T1-weighted, T2-weighted and FLAIR MRI images coming from different sources, diseases, patients, scanners and sites.
 License: GPL-2
 Encoding: UTF-8
