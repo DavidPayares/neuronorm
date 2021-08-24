@@ -191,6 +191,8 @@ preprocess_modalities <- function(mri.patient, folder.patient, modalities, atlas
   syn_mri <- extrantsr::registration(filename = bias_files[[1]], outfile = syn_files[[1]],
                                       template.file = atlas, typeofTransform = transformation,
                                       remove.warp = FALSE, outprefix = fwd_warp_mni, verbose = FALSE)
+  to.rm=list.files(file.path(folder.patient))
+  to.rm=to.rm[grepl("InverseWarp", to.rm)]; file.remove(to.rm)
   if (length(modalities) > 1){
     bias_mris <- create_bias_list(modalities, bias_mri$T1, bias_mri_comp)
     app_warp <- lapply(list(bias_mris[[-1]]), function(x) extrantsr::ants_apply_transforms(fixed = atlas,
