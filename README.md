@@ -3,7 +3,6 @@
 
 [![R-CMD-check](https://github.com/DavidPayares/neuronorm/workflows/R-CMD-check/badge.svg)](https://github.com/DavidPayares/neuronorm/actions)
 [![Build Status](https://travis-ci.com/DavidPayares/neuronorm.svg?branch=main)](https://travis-ci.com/DavidPayares/neuronorm)
-[![](https://www.r-pkg.org/badges/version/neuronorm?color=blue)](https://cran.r-project.org/package=neuronorm)
 
 
 NeuroNorm is an R package to preprocess structural magnetic resonance imaging (MRI) from multiple patients, diseases, scanners, and sites. NeuroNorm transforms multiple raw T1-w, T2-w, and FLAIR images in the NIfTI format into preprocessed images comparable across patients, sites, and diseases. Neuronorm performs inhomogeneity correction, spatial registration to a template, skull stripping, spatially informed MRI scan (brain segmentation) generation, intensity normalization, and intensity adjustment. NeuroNorm comes up as a standard procedure to compare and analyze multiple MRI scans of different brain disorders.
@@ -21,14 +20,9 @@ The methods and algorithms selected of `NeuroNorm` are state-of-the-art methods 
 
 ## Installation
 
-`Neuronorm` is now available on [CRAN!](https://cran.r-project.org/web/packages/neuronorm/index.html).
-You can install it directly from R.
+`Neuronorm` is no longer available on [CRAN!](https://cran.r-project.org/web/packages/neuronorm/index.html).
 
-``` r
-install.packages("neuronorm")
-```
-
-Or you can install it from GitHub using `devtools`.
+You can install it from GitHub using `devtools`.
 
 ``` r
 # install.packages("devtools")
